@@ -1,0 +1,9 @@
+[
+  {
+    "id": "task-001",
+    "title": "LLM Echo Test",
+    "description": "Summarize this task's description and return it in Shakespearean English.",
+    "type": "code",
+    "status": "pending"
+  }
+]
