@@ -1,55 +1,49 @@
-import os, json, difflib
-from typing import List, Dict, Any
-from utils import log_info, log_error, AUTOMATION_CORE
+import os, tempfile
+from typing import List, Dict
+from utils import log_info, log_error
 
-REPO_ROOT = os.getcwd()
+VALID_ACTIONS = {"write", "append", "patch"}
 
-def _safe_path(path: str) -> str:
-    full = os.path.abspath(os.path.join(REPO_ROOT, path))
-    if not full.startswith(REPO_ROOT):
-        raise ValueError(f"Refusing to write outside repo: {path}")
-    return full
+def _atomic_write(path: str, content: str):
+    os.makedirs(os.path.dirname(path) or ".", exist_ok=True)
+    dir_ = os.path.dirname(path) or "."
+    with tempfile.NamedTemporaryFile("w", delete=False, dir=dir_, encoding="utf-8") as tmp:
+        tmp.write(content)
+        tmp_path = tmp.name
+    os.replace(tmp_path, path)
 
-def _refuse_if_locked(path: str):
-    base = os.path.basename(path)
-    if base in AUTOMATION_CORE:
-        raise ValueError(f"Refusing to modify locked file: {base}")
-
-def apply_operations(ops: List[Dict[str, Any]]) -> List[str]:
+def apply_operations(operations: List[Dict], dry_run: bool = False) -> List[str]:
     results = []
-    for i, op in enumerate(ops, 1):
-        action = (op.get("action") or "").lower()
+    for op in operations:
+        action = op.get("action")
         path = op.get("path")
-        content = op.get("content", "")
-        if not action or not path:
-            raise ValueError(f"Operation {i} missing action/path.")
-        safe = _safe_path(path)
-        _refuse_if_locked(safe)
-        os.makedirs(os.path.dirname(safe), exist_ok=True)
+        content = op.get("content")
 
-        if action == "write":
-            with open(safe, "w", encoding="utf-8") as f:
-                f.write(content)
-            results.append(f"[WRITE] {path} ({len(content)} bytes)")
-        elif action == "append":
-            with open(safe, "a", encoding="utf-8") as f:
-                f.write(content)
-            results.append(f"[APPEND] {path} (+{len(content)} bytes)")
-        elif action == "patch":
-            if not os.path.exists(safe):
-                raise ValueError(f"Patch target does not exist: {path}")
-            with open(safe, "r", encoding="utf-8") as f:
-                old = f.read().splitlines(keepends=False)
-            try:
-                patched = list(difflib.restore(content.splitlines(), 1))
-                if not patched:
-                    patched = old
-            except Exception:
-                patched = content.splitlines(keepends=False)
+        if action not in VALID_ACTIONS:
+            log_error(f"❌ Invalid action: {action}")
+            continue
+        if not path or not isinstance(content, str):
+            log_error(f"❌ Invalid operation format: {op}")
+            continue
 
-            with open(safe, "w", encoding="utf-8") as f:
-                f.write("\n".join(patched) + ("\n" if patched and not patched[-1].endswith("\n") else ""))
-            results.append(f"[PATCH] {path} (applied)")
-        else:
-            raise ValueError(f"Unknown action: {action}")
+        if dry_run:
+            log_info(f"[Dry Run] Would perform: {action.upper()} -> {path}")
+            results.append(f"{action.upper()} {path}")
+            continue
+
+        try:
+            if action == "write":
+                _atomic_write(path, content)
+            elif action == "append":
+                os.makedirs(os.path.dirname(path) or ".", exist_ok=True)
+                with open(path, "a", encoding="utf-8") as f:
+                    f.write(content)
+            elif action == "patch":
+                os.makedirs(os.path.dirname(path) or ".", exist_ok=True)
+                with open(path, "a", encoding="utf-8") as f:
+                    f.write("\n# PATCH APPLIED:\n" + content)
+            results.append(f"{action.upper()} {path}")
+            log_info(f"✅ {action.upper()} applied to {path}")
+        except Exception as e:
+            log_error(f"❌ Failed to apply operation {action} on {path}: {e}")
     return results

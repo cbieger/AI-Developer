@@ -1,7 +1,7 @@
 from typing import Dict, Any
 from providers.llm_openai import call_openai_chat
 
-def run_task(task: Dict[str, Any], provider: str = "llm") -> Dict[str, Any]:
+def run_task(task: Dict[str, Any], provider: str = "llm", dry_run: bool = False, context: Dict[str, Any] = {}) -> Dict[str, Any]:
     if provider != "llm":
-        return {"feedback": "❌ Only 'llm' provider is supported in this workflow.", "error": True}
-    return call_openai_chat(task)
+        return {"feedback": "❌ Unsupported provider.", "error": True}
+    return call_openai_chat(task, dry_run=dry_run, context=context)
