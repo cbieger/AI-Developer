@@ -15,3 +15,4 @@ fatal: a branch named 'task/llm-live-001' already exists
 2025-10-02 16:51:41,718 | INFO | [OpenAI] usage prompt=189 completion=59 total=248 finish_reason=stop
 2025-10-02 16:51:41,721 | INFO | ✅ WRITE applied to relative/file.ext
 2025-10-02 16:51:41,755 | INFO | Checking out existing branch task/llm-live-002
+[INFO] ✅ All tasks processed.

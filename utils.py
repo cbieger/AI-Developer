@@ -1,62 +1,40 @@
-import json
 import os
-from datetime import datetime
+import json
+from datetime import datetime, timezone
 
-# Ensure log and archive directories exist
+LOG_DIR = "logs"
+
 def ensure_log_dirs():
-    os.makedirs("logs", exist_ok=True)
-    os.makedirs("archive", exist_ok=True)
+    os.makedirs(LOG_DIR, exist_ok=True)
 
-# Info logger
-def log_info(msg):
+def log_info(msg: str):
     print(msg)
-    with open("logs/workflow.log", "a", encoding="utf-8") as f:
-        f.write(f"[INFO] {msg}\n")
+    with open(os.path.join(LOG_DIR, "workflow.log"), "a", encoding="utf-8") as f:
+        f.write(f"{datetime.now(timezone.utc).isoformat()} INFO: {msg}\n")
 
-# Error logger
-def log_error(msg):
+def log_error(msg: str):
     print(msg)
-    with open("logs/errors.log", "a", encoding="utf-8") as f:
-        f.write(f"[ERROR] {msg}\n")
+    with open(os.path.join(LOG_DIR, "errors.log"), "a", encoding="utf-8") as f:
+        f.write(f"{datetime.now(timezone.utc).isoformat()} ERROR: {msg}\n")
 
-# Feedback logger
-def log_feedback(task_id, msg):
-    print(f"💬 Feedback from {task_id}:\n{msg}")
-    with open("logs/ai_feedback.log", "a", encoding="utf-8") as f:
-        f.write(f"\n==== {task_id} - {datetime.utcnow().isoformat()} ====\n{msg}\n")
+def log_feedback(task_id: str, feedback: str):
+    with open(os.path.join(LOG_DIR, "ai_feedback.log"), "a", encoding="utf-8") as f:
+        f.write(f"=== {task_id} ===\n{feedback}\n\n")
 
-# Append a task to a JSON archive file
-def archive_append(task_data, filename):
-    path = os.path.join("archive", filename)
-    if os.path.exists(path):
-        with open(path, "r", encoding="utf-8") as f:
-            try:
-                data = json.load(f)
-            except json.JSONDecodeError:
-                data = []
-    else:
-        data = []
+def archive_append(data: dict, filepath: str):
+    os.makedirs(os.path.dirname(filepath), exist_ok=True)
+    archive = []
+    if os.path.exists(filepath):
+        with open(filepath, "r", encoding="utf-8") as f:
+            archive = json.load(f)
+    archive.append(data)
+    with open(filepath, "w", encoding="utf-8") as f:
+        json.dump(archive, f, indent=2)
 
-    data.append(task_data)
-
-    with open(path, "w", encoding="utf-8") as f:
-        json.dump(data, f, indent=2)
-
-# Load tasks from JSON file
-def load_tasks(path):
+def load_tasks_from_path(path: str):
     with open(path, "r", encoding="utf-8") as f:
         return json.load(f)
 
-# Save tasks to JSON file
-def save_tasks(tasks, path):
+def save_tasks(tasks: list, path: str):
     with open(path, "w", encoding="utf-8") as f:
         json.dump(tasks, f, indent=2)
-
-# Higher-level loader with path validation and logging
-def load_tasks_from_path(path):
-    abs_path = os.path.abspath(path)
-    if not os.path.exists(abs_path):
-        log_error(f"❌ Task file does not exist: {abs_path}")
-        raise FileNotFoundError(f"Task file not found: {abs_path}")
-    return load_tasks(abs_path)
-
