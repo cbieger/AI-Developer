@@ -27,3 +27,17 @@
 2025-10-02 16:49:56,096 | INFO | HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
 2025-10-02 16:49:56,113 | INFO | [OpenAI] usage prompt=197 completion=37 total=234 finish_reason=stop
 2025-10-02 16:49:56,152 | INFO | Creating branch task/llm-live-001
+2025-10-02 16:49:56,257 | INFO | Committed changes: llm-live-001: LLM Echo Probe
+2025-10-02 16:49:56,295 | ERROR | llm-live-001: Git error: Command failed: git checkout main
+
+error: Your local changes to the following files would be overwritten by checkout:
+	logs/workflow.log
+Please commit your changes or stash them before you switch branches.
+Aborting
+
+2025-10-02 16:49:56,296 | INFO | 🔧 Running llm-live-002: LLM Rich Probe
+2025-10-02 16:49:56,296 | INFO | [OpenAI] base=default model=gpt-4o-mini temp=0.2 max_tokens=3000
+2025-10-02 16:49:58,095 | INFO | HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-10-02 16:49:58,099 | INFO | [OpenAI] usage prompt=189 completion=59 total=248 finish_reason=stop
+2025-10-02 16:49:58,102 | INFO | ✅ WRITE applied to relative/file.ext
+2025-10-02 16:49:58,137 | INFO | Creating branch task/llm-live-002

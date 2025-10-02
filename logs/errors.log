@@ -1,1 +1,8 @@
 2025-10-02 16:48:40,088 | ERROR | Invalid project path: /full/path/to/ai-dev-test
+2025-10-02 16:49:56,295 | ERROR | llm-live-001: Git error: Command failed: git checkout main
+
+error: Your local changes to the following files would be overwritten by checkout:
+	logs/workflow.log
+Please commit your changes or stash them before you switch branches.
+Aborting
+
