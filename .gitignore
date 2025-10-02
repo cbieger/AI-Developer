@@ -1,4 +1,19 @@
+# environments & secrets
 .env
-.env
+.venv/
+venv/
+*.env
+*.key
+*.pem
+
+# python build
+__pycache__/
+*.py[cod]
+*.egg-info/
+dist/
+build/
+
+# logs & archives
 logs/
 archive/
+*.log
