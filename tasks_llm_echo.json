@@ -1,0 +1,16 @@
+[
+  {
+    "id": "llm-live-001",
+    "title": "LLM Echo Probe",
+    "description": "Reply with a single JSON object: {\"probe\":\"ok\",\"ts\":\"<iso8601>\",\"note\":\"say 'pong'\"}. Return only JSON.",
+    "type": "code",
+    "status": "pending"
+  },
+  {
+    "id": "llm-live-002",
+    "title": "LLM Rich Probe",
+    "description": "Return exactly three lines: line1: PING, line2: PONG, line3: MODEL=${AI_MODEL}.",
+    "type": "code",
+    "status": "pending"
+  }
+]
