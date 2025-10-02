@@ -1,6 +1,6 @@
-# AI Developer (Godot-focused, ChatGPT API)
+# AI Developer (the project-focused, ChatGPT API)
 
-Automates “task list → code edits → git” for a Godot project using the ChatGPT (OpenAI) API.
+Automates “task list → code edits → git” for a the project project using the ChatGPT (OpenAI) API.
 You write tasks in `tasks.json`. The orchestrator sends each task to the LLM, applies returned
 file operations, and (optionally) commits/merges.
 
@@ -16,7 +16,7 @@ file operations, and (optionally) commits/merges.
 - Python 3.10+
 - Git
 - OpenAI API key with access to your chosen model
-- (Optional) Godot 4.x on your PATH for validation hooks later
+- (Optional) the project 4.x on your PATH for validation hooks later
 
 ## Quick Start
 ```bash
@@ -24,11 +24,11 @@ python -m venv .venv
 source .venv/bin/activate
 pip install -r requirements.txt
 
-export OPENAI_API_KEY=sk-************************
+export OPENAI_API_KEY=<YOUR_OPENAI_API_KEY>
 export OPENAI_MODEL=gpt-5                   # or gpt-5-thinking if enabled
 
-# Edit a sibling project one directory up, e.g. ../WyrdRoot
-python orchestrator_ai.py --provider llm --auto --git --project ../WyrdRoot
+# Edit a sibling project one directory up, e.g. ../the project
+python orchestrator_ai.py --provider llm --auto --git --project ../the project
 ```
 
 ## Repository Layout
@@ -62,10 +62,10 @@ logs/                   # workflow.log, ai_feedback.log
 ## Running
 ```bash
 # Default: tasks.json in target project
-python orchestrator_ai.py --provider llm --auto --git --project ../WyrdRoot
+python orchestrator_ai.py --provider llm --auto --git --project ../the project
 
 # Keep tasks in ai-developer repo while editing another repo
-python orchestrator_ai.py --provider llm --auto --git --project ../WyrdRoot --tasks ./tasks.json
+python orchestrator_ai.py --provider llm --auto --git --project ../the project --tasks ./tasks.json
 ```
 
 ## Troubleshooting
