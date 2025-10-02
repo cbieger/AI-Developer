@@ -1,25 +1,21 @@
 #!/usr/bin/env python3
-import argparse, os, sys, json
-from typing import Dict, Any
-from datetime import datetime
-from concurrent.futures import ThreadPoolExecutor, as_completed
-
+import argparse, os, sys
+from typing import Dict, Any, List
+from datetime import datetime, timezone
 from task_runner import run_task
-from git_utils import create_or_checkout_branch_for_task, commit_all_for_task, merge_branch_to_default
-from utils import ensure_log_dirs, log_info, log_error, log_feedback, load_tasks_from_path
-
-def archive_append(obj: dict, path: str):
-    os.makedirs(os.path.dirname(path), exist_ok=True)
-    blob = []
-    if os.path.exists(path):
-        try:
-            with open(path, "r", encoding="utf-8") as f:
-                blob = json.load(f)
-        except Exception:
-            blob = []
-    blob.append(obj)
-    with open(path, "w", encoding="utf-8") as f:
-        json.dump(blob, f, indent=2)
+from git_utils import (
+    start_automation_branch,
+    commit_all_for_tasks,
+    finalize_automation_branch
+)
+from utils import (
+    ensure_log_dirs,
+    log_info,
+    log_error,
+    log_feedback,
+    archive_append,
+    load_tasks_from_path
+)
 
 VALID_STATUSES = {"pending", "error"}
 REQUIRED_TASK_KEYS = {"id", "title", "description"}
@@ -31,44 +27,6 @@ def validate_task(task: Dict[str, Any]) -> bool:
         return False
     return True
 
-def process_task(task, args, project_abs):
-    task_id = task["id"]
-    title = task["title"]
-    log_info(f"🔧 Running {task_id}: {title}")
-
-    result: Dict[str, Any] = run_task(task, provider=args.provider, dry_run=args.dry_run, context={"cwd": project_abs})
-    feedback = (result or {}).get("feedback", "").strip()
-    error_flag = bool(result.get("error", False))
-
-    if feedback:
-        log_feedback(task_id, feedback)
-
-    if error_flag:
-        log_error(f"❌ {task_id}: Task failed. Skipping git.")
-        task["status"] = "error"
-        if args.archive:
-            archive_append({**task, "failed_at": datetime.utcnow().isoformat() + "Z"}, "archive/failed_tasks.json")
-        return task
-
-    if args.git and not args.dry_run:
-        try:
-            branch = create_or_checkout_branch_for_task(task_id, cwd=project_abs)
-            commit_all_for_task(task_id, title, cwd=project_abs)
-            merge_branch_to_default(branch, cwd=project_abs)
-        except Exception as e:
-            log_error(f"{task_id}: Git error: {e}")
-            task["status"] = "error"
-            if args.archive:
-                archive_append({**task, "error": str(e)}, "archive/failed_tasks.json")
-            return task
-
-    task["status"] = "done"
-    log_info(f"✅ {task_id}: completed.")
-    if args.archive:
-        archive_append({**task, "completed_at": datetime.utcnow().isoformat() + "Z"}, "archive/completed_tasks.json")
-
-    return task
-
 def main():
     ensure_log_dirs()
 
@@ -78,7 +36,7 @@ def main():
     parser.add_argument("--git", action="store_true")
     parser.add_argument("--dry-run", action="store_true")
     parser.add_argument("--archive", action="store_true")
-    parser.add_argument("--parallel", type=int, default=1, help="Number of tasks to run in parallel (default 1 = sequential)")
+    parser.add_argument("--parallel", type=int, default=1)
     parser.add_argument("--project", dest="project_path", default=".")
     parser.add_argument("--tasks", dest="tasks_path", default="tasks.json")
     args = parser.parse_args()
@@ -99,47 +57,61 @@ def main():
     os.chdir(project_abs)
     log_info(f"📂 Working directory set to: {project_abs}")
 
+    completed_tasks: List[Dict[str, Any]] = []
+
     try:
         tasks = load_tasks_from_path(args.tasks_path)
-        runnable = []
+        branch_name = start_automation_branch(cwd=project_abs) if args.git and not args.dry_run else None
 
         for task in tasks:
             status = task.get("status", "pending")
             if status not in VALID_STATUSES:
                 continue
+
             if not validate_task(task):
                 task["status"] = "error"
-                if args.archive:
-                    archive_append({
-                        "id": task.get("id"),
-                        "title": task.get("title"),
-                        "error": "validation failed",
-                        "failed_at": datetime.utcnow().isoformat() + "Z"
-                    }, "archive/failed_tasks.json")
                 continue
-            runnable.append(task)
 
-        if args.parallel <= 1:
-            for task in runnable:
-                process_task(task, args, project_abs)
-        else:
-            with ThreadPoolExecutor(max_workers=args.parallel) as executor:
-                futures = {executor.submit(process_task, task, args, project_abs): task for task in runnable}
-                for future in as_completed(futures):
-                    future.result()
+            task_id = task["id"]
+            title = task["title"]
+            log_info(f"🔧 Running {task_id}: {title}")
+
+            result = run_task(task, provider=args.provider, dry_run=args.dry_run, context={"cwd": project_abs})
+            feedback = (result or {}).get("feedback", "").strip()
+            error_flag = bool(result.get("error", False))
+
+            if feedback:
+                log_feedback(task_id, feedback)
+
+            if error_flag:
+                log_error(f"❌ {task_id}: Task failed.")
+                task["status"] = "error"
+                continue
+
+            task["status"] = "done"
+            completed_tasks.append({**task, "feedback": feedback})
+            log_info(f"✅ {task_id}: completed.")
+
+        if args.git and not args.dry_run:
+            commit_all_for_tasks(branch_name, completed_tasks, cwd=project_abs)
+            finalize_automation_branch(branch_name, completed_tasks, cwd=project_abs)
 
     finally:
         try:
             t_abs = os.path.abspath(args.tasks_path)
             if t_abs.startswith(project_abs) and not args.dry_run:
+                import json
                 with open(t_abs, "w", encoding="utf-8") as f:
                     json.dump(tasks, f, indent=2)
         except Exception as e:
             log_error(f"Failed to save tasks: {e}")
         os.chdir(original_cwd)
 
+    if args.archive:
+        for task in completed_tasks:
+            archive_append({**task, "completed_at": datetime.now(timezone.utc).isoformat()}, "archive/completed_tasks.json")
+
     log_info("✅ All tasks processed.")
 
 if __name__ == "__main__":
     main()
-
