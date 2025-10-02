@@ -6,5 +6,21 @@
     "type": "code",
     "status": "error",
     "error": "Command failed: git checkout main\n\nerror: Your local changes to the following files would be overwritten by checkout:\n\tlogs/workflow.log\nPlease commit your changes or stash them before you switch branches.\nAborting\n"
+  },
+  {
+    "id": "llm-live-002",
+    "title": "LLM Rich Probe",
+    "description": "Return exactly three lines: line1: PING, line2: PONG, line3: MODEL=${AI_MODEL}.",
+    "type": "code",
+    "status": "error",
+    "error": "Command failed: git checkout main\n\nerror: Your local changes to the following files would be overwritten by checkout:\n\tlogs/workflow.log\nPlease commit your changes or stash them before you switch branches.\nAborting\n"
+  },
+  {
+    "id": "llm-live-001",
+    "title": "LLM Echo Probe",
+    "description": "Reply with a single JSON object: {\"probe\":\"ok\",\"ts\":\"<iso8601>\",\"note\":\"say 'pong'\"}. Return only JSON.",
+    "type": "code",
+    "status": "error",
+    "error": "Command failed: git checkout -b task/llm-live-001\n\nfatal: a branch named 'task/llm-live-001' already exists\n"
   }
 ]

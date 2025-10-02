@@ -1,8 +1,4 @@
-2025-10-02 16:48:40,088 | ERROR | Invalid project path: /full/path/to/ai-dev-test
-2025-10-02 16:49:56,295 | ERROR | llm-live-001: Git error: Command failed: git checkout main
+2025-10-02 16:51:40,544 | ERROR | llm-live-001: Git error: Command failed: git checkout -b task/llm-live-001
 
-error: Your local changes to the following files would be overwritten by checkout:
-	logs/workflow.log
-Please commit your changes or stash them before you switch branches.
-Aborting
+fatal: a branch named 'task/llm-live-001' already exists
 

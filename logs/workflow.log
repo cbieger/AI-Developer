@@ -1,43 +1,17 @@
-2025-10-02 16:36:55,947 | INFO | 📂 Working directory set to: /Users/cullen.bieger/Desktop/Git/ai-developer
-2025-10-02 16:36:55,948 | INFO | 🔧 Running llm-live-001: LLM Echo Probe
-2025-10-02 16:36:55,948 | INFO | [OpenAI] base=default model=gpt-4o-mini temp=0.2 max_tokens=3000
-2025-10-02 16:37:01,417 | INFO | HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
-2025-10-02 16:37:01,433 | INFO | [OpenAI] usage prompt=197 completion=37 total=234 finish_reason=stop
-2025-10-02 16:37:01,434 | INFO | ✅ llm-live-001: completed.
-2025-10-02 16:37:01,434 | INFO | ✅ All tasks processed.
-2025-10-02 16:41:58,329 | INFO | 📂 Working directory set to: /Users/cullen.bieger/Desktop/Git/ai-developer
-2025-10-02 16:41:58,330 | INFO | 🔧 Running llm-live-001: LLM Echo Probe
-2025-10-02 16:41:58,330 | INFO | [OpenAI] base=default model=gpt-4o-mini temp=0.2 max_tokens=3000
-2025-10-02 16:42:00,528 | INFO | HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
-2025-10-02 16:42:00,544 | INFO | [OpenAI] usage prompt=197 completion=37 total=234 finish_reason=stop
-2025-10-02 16:42:00,545 | INFO | ✅ llm-live-001: completed.
-2025-10-02 16:42:00,545 | INFO | 🔧 Running llm-live-002: LLM Rich Probe
-2025-10-02 16:42:00,545 | INFO | [OpenAI] base=default model=gpt-4o-mini temp=0.2 max_tokens=3000
-2025-10-02 16:42:02,988 | INFO | HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
-2025-10-02 16:42:02,992 | INFO | [OpenAI] usage prompt=189 completion=69 total=258 finish_reason=stop
-2025-10-02 16:42:02,996 | INFO | ✅ WRITE applied to relative/file.ext
-2025-10-02 16:42:02,997 | INFO | ✅ llm-live-002: completed.
-2025-10-02 16:42:02,998 | INFO | ✅ All tasks processed.
-2025-10-02 16:48:40,088 | ERROR | Invalid project path: /full/path/to/ai-dev-test
-2025-10-02 16:49:22,016 | INFO | 📂 Working directory set to: /Users/cullen.bieger/Desktop/Git/ai-developer
-2025-10-02 16:49:22,017 | INFO | ✅ All tasks processed.
-2025-10-02 16:49:53,113 | INFO | 📂 Working directory set to: /Users/cullen.bieger/Desktop/Git/ai-developer
-2025-10-02 16:49:53,114 | INFO | 🔧 Running llm-live-001: LLM Echo Probe
-2025-10-02 16:49:53,114 | INFO | [OpenAI] base=default model=gpt-4o-mini temp=0.2 max_tokens=3000
-2025-10-02 16:49:56,096 | INFO | HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
-2025-10-02 16:49:56,113 | INFO | [OpenAI] usage prompt=197 completion=37 total=234 finish_reason=stop
-2025-10-02 16:49:56,152 | INFO | Creating branch task/llm-live-001
-2025-10-02 16:49:56,257 | INFO | Committed changes: llm-live-001: LLM Echo Probe
-2025-10-02 16:49:56,295 | ERROR | llm-live-001: Git error: Command failed: git checkout main
+2025-10-02 16:51:38,431 | INFO | 📂 Working directory set to: /Users/cullen.bieger/Desktop/Git/ai-developer
+2025-10-02 16:51:38,432 | INFO | 🔧 Running llm-live-001: LLM Echo Probe
+2025-10-02 16:51:38,432 | INFO | [OpenAI] base=default model=gpt-4o-mini temp=0.2 max_tokens=3000
+2025-10-02 16:51:40,454 | INFO | HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-10-02 16:51:40,469 | INFO | [OpenAI] usage prompt=197 completion=37 total=234 finish_reason=stop
+2025-10-02 16:51:40,499 | INFO | Checking out existing branch task/llm-live-001
+2025-10-02 16:51:40,525 | INFO | Creating branch task/llm-live-001
+2025-10-02 16:51:40,544 | ERROR | llm-live-001: Git error: Command failed: git checkout -b task/llm-live-001
 
-error: Your local changes to the following files would be overwritten by checkout:
-	logs/workflow.log
-Please commit your changes or stash them before you switch branches.
-Aborting
+fatal: a branch named 'task/llm-live-001' already exists
 
-2025-10-02 16:49:56,296 | INFO | 🔧 Running llm-live-002: LLM Rich Probe
-2025-10-02 16:49:56,296 | INFO | [OpenAI] base=default model=gpt-4o-mini temp=0.2 max_tokens=3000
-2025-10-02 16:49:58,095 | INFO | HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
-2025-10-02 16:49:58,099 | INFO | [OpenAI] usage prompt=189 completion=59 total=248 finish_reason=stop
-2025-10-02 16:49:58,102 | INFO | ✅ WRITE applied to relative/file.ext
-2025-10-02 16:49:58,137 | INFO | Creating branch task/llm-live-002
+2025-10-02 16:51:40,546 | INFO | 🔧 Running llm-live-002: LLM Rich Probe
+2025-10-02 16:51:40,546 | INFO | [OpenAI] base=default model=gpt-4o-mini temp=0.2 max_tokens=3000
+2025-10-02 16:51:41,714 | INFO | HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-10-02 16:51:41,718 | INFO | [OpenAI] usage prompt=189 completion=59 total=248 finish_reason=stop
+2025-10-02 16:51:41,721 | INFO | ✅ WRITE applied to relative/file.ext
+2025-10-02 16:51:41,755 | INFO | Checking out existing branch task/llm-live-002
